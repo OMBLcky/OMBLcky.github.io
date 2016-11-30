@@ -1,0 +1,609 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="iOS文档解读," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.2" />
+
+
+
+
+
+
+<meta name="description" content="Overview&amp;#8195;&amp;#8195;一般来说我们都会很少去创建UIViewController的实例，而是创建UIViewController的子类的实例，然后使用这些子类来创建一些特定的行为或者可视化界面。
+&amp;#8195;&amp;#8195;一个ViewController的主要职责包括：
+
+根据底层数据的变化来更新View的内容
+响应用户交互
+重新构建view并且管理布局的所有接口
+
+&amp;#8">
+<meta property="og:type" content="article">
+<meta property="og:title" content="UIViewController 文档解读">
+<meta property="og:url" content="http://yoursite.com/2016/10/12/UIViewController/index.html">
+<meta property="og:site_name" content="Caio's Blog">
+<meta property="og:description" content="Overview&amp;#8195;&amp;#8195;一般来说我们都会很少去创建UIViewController的实例，而是创建UIViewController的子类的实例，然后使用这些子类来创建一些特定的行为或者可视化界面。
+&amp;#8195;&amp;#8195;一个ViewController的主要职责包括：
+
+根据底层数据的变化来更新View的内容
+响应用户交互
+重新构建view并且管理布局的所有接口
+
+&amp;#8">
+<meta property="og:updated_time" content="2016-10-12T02:14:51.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="UIViewController 文档解读">
+<meta name="twitter:description" content="Overview&amp;#8195;&amp;#8195;一般来说我们都会很少去创建UIViewController的实例，而是创建UIViewController的子类的实例，然后使用这些子类来创建一些特定的行为或者可视化界面。
+&amp;#8195;&amp;#8195;一个ViewController的主要职责包括：
+
+根据底层数据的变化来更新View的内容
+响应用户交互
+重新构建view并且管理布局的所有接口
+
+&amp;#8">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    }
+  };
+</script>
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2016/10/12/UIViewController/"/>
+
+
+  <title> UIViewController 文档解读 | Caio's Blog </title>
+</head>
+
+<body itemscope itemtype="//schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="//schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">Caio's Blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">生命不息，作死不止</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="/404.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />
+            
+            公益404
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="//schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                UIViewController 文档解读
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-10-12T10:06:49+08:00" content="2016-10-12">
+              2016-10-12
+            </time>
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="Overview"><a href="#Overview" class="headerlink" title="Overview"></a>Overview</h3><p>&#8195;&#8195;一般来说我们都会很少去创建UIViewController的实例，而是创建UIViewController的子类的实例，然后使用这些子类来创建一些特定的行为或者可视化界面。</p>
+<p>&#8195;&#8195;一个ViewController的主要职责包括：</p>
+<ul>
+<li>根据底层数据的变化来更新View的内容</li>
+<li>响应用户交互</li>
+<li>重新构建view并且管理布局的所有接口</li>
+</ul>
+<p>&#8195;&#8195;一个视图控制器和它所管理或者加入的一些视图View紧密关联。视图控制器也是一个UIResponder的对象，并且也被插入至它的rootView和rootView的superView的响应链中，这些View可以来自不同的视图控制器。如果在一个视图控制器中，没有任何一个View去响应这个时间，那么这个视图控制器可以选择去处理这个时间，或者将它传递到superView去。</p>
+<h3 id="ViewManagerment"><a href="#ViewManagerment" class="headerlink" title="ViewManagerment"></a>ViewManagerment</h3><p>&#8195;&#8195;每个视图都管理着一个View层，而这个View层的根View将会被保存到这个类的view属性中。rootView就类似于这个View层中其它view的一个容器。window包含的那个viewController是整个App的根viewController并且它的大小是填满整个窗口的。<code>视图控制器对它的View是懒加载的。</code></p>
+<h3 id="Important"><a href="#Important" class="headerlink" title="Important"></a>Important</h3><p>&#8195;&#8195;<code>一个视图控制器是它的view和任何它创建的subView的唯一个持有者。它负责创建这些view，并且在合适的时机丢弃它们，例如：在控制器本身被释放的的时候。当使用storyboard或者nib文件存储你的View的时候，每个控制器请求他们的时候，就会自动的拷贝一份这些view。然而如果你手动创建这些View的时候那么你也需要手动释放。并且你也不能在各个控制器中复用了。</code></p>
+<h3 id="Handling-View-Rotations"><a href="#Handling-View-Rotations" class="headerlink" title="Handling View Rotations"></a>Handling View Rotations</h3><p>&#8195;&#8195;在iOS8之后，所有与旋转相关的方法已经全部弃用了。而旋转已经被看做是视图控制器中的<code>view size上的改变了</code>。因此现在已经全部使用<code>viewWillTransition(to:with:)</code>。当发生旋转的时候，UIKit首先会调用window窗口的根视图控制器的这个方法，然后这个视图控制器又会通知它的子视图控制器，以此按照视图控制器的层级传递下去。</p>
+<pre><code>在iOS6和iOS7中，应用可以在app的Info.plist中定义支持的方向接口。你可以在一个ViewController中重写 supportedInterfaceOrientations 方法来限制当前的视图控制器所支持的屏幕方向种类。系统只会调用窗口的根视图控制器，或者是填满整个屏幕的视图控制器的方法，而使用了由父视图控制器提供的部分屏幕的子视图控制器便不再参与决定屏幕的方向。最终，应用在Info.plist中限定的屏幕方向列表和当前的视图控制器限定的列表的交集，便是这个视图控制器最终可以达到的方向。或者你可以直接重写 preferredInterfaceOrientationForPresentation 在控制器全屏显示的时候，直接会使用这个方法返回的方向类别。
+在launch阶段，只有当application完成 application(_:didFinishLaunchingWithOptions:)方法返回的时候才会按照以上描述的机制去显示，在此之前都是竖屏显示。
+</code></pre><h3 id="Implementing-a-Container-View-Controller"><a href="#Implementing-a-Container-View-Controller" class="headerlink" title="Implementing a Container View Controller"></a>Implementing a Container View Controller</h3><p>&#8195;&#8195;一个UIViewController的子类也可以作为一个容器类的视图控制器。一个容器类的视图控制器管理着这个控制器所包含的其他子视图控制器的内容展现。</p>
+<p>&#8195;&#8195;容器视图控制器类必须要声明一个公开的接口来与子视图建立关系。通过建立一个耦合度低的容器，你的子视图控制器可以在你的容器中独立的实现它的一些逻辑行为，而不必关心容器的一些私有的细节。</p>
+<p>&#8195;&#8195;<code>容器视图控制器必须在将子视图加入到视图控制器层之前将它与自己建立关系</code>。只有这样，iOS操作系统才能正确的将事件发送到这些子视图控制器和这些控制器所管理的view中去。<code>同样的，在它将子视图移除的时候，也要断开与父视图的联系</code>。为了断开这种联系，容器需要调用一些基类定义的方法，这些方法不是被容器类调用的，而是被容器实现使用来告诉子视图一些预期的容器行为。</p>
+<pre><code>在创建一个容器类视图控制器的时候不强制要求实现覆盖任何方法。
+根据默认的方式，旋转和显示回调都会自动的传递给子视图。你可以选择性的实现shouldAutomaticallyForwardRotationMethods() 和 shouldAutomaticallyForwardAppearanceMethods方法来自己控制这个。
+</code></pre><h3 id="State-Preservation-and-Restoration"><a href="#State-Preservation-and-Restoration" class="headerlink" title="State Preservation and Restoration"></a>State Preservation and Restoration</h3><p>&#8195;&#8195;如果你在视图控制器的<code>restorationIdentifier</code>属性中指定了一个值，那么当应用转换到后台的时候系统就会要求这个视图控制器去编码它自己。当保存的时候，一个视图控制器会保存它包含的所有层级的并且包含有<code>restorationIdentifier</code>的View。视图控制器不会自动保存任何的状态。如果你实现了一个容器类的视图控制器，你必须自己实现所有子view的编码。并且每个子View都要有它唯一的<code>restorationIdentifier</code>。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/iOS文档解读/" rel="tag">#iOS文档解读</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/10/12/BackgroundTask/" rel="next" title="Background Execution">
+                <i class="fa fa-chevron-left"></i> Background Execution
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/10/12/OC-Code/" rel="prev" title="OC代码规范">
+                OC代码规范 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="//schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://7xqmjb.com1.z0.glb.clouddn.com/2016091443690u=1172000421,752760050&fm=116&gp=0.gif"
+               alt="Caio" />
+          <p class="site-author-name" itemprop="name">Caio</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">4</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Overview"><span class="nav-number">1.</span> <span class="nav-text">Overview</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ViewManagerment"><span class="nav-number">2.</span> <span class="nav-text">ViewManagerment</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Important"><span class="nav-number">3.</span> <span class="nav-text">Important</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Handling-View-Rotations"><span class="nav-number">4.</span> <span class="nav-text">Handling View Rotations</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Implementing-a-Container-View-Controller"><span class="nav-number">5.</span> <span class="nav-text">Implementing a Container View Controller</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#State-Preservation-and-Restoration"><span class="nav-number">6.</span> <span class="nav-text">State Preservation and Restoration</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Caio</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.2"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

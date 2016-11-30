@@ -1,0 +1,604 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="iOS文档解读," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.2" />
+
+
+
+
+
+
+<meta name="description" content="后台执行&amp;#8195;&amp;#8195;当用户不在前台使用你的应用的时候，系统就会将它挪到后台状态。对于很多App而言，后台状态就是app在转向暂停路上的一个简短的过渡。暂停App有利于提升电池的寿命，并且它还可以让系统提供出更多的资源给用户正在关注的前台应用。
+&amp;#8195;&amp;#8195;大多数应用都能够移至暂停状态，但是也有一些App可以有合法的原因而留在后台。比如说一个徒步旅行的应用，可能要一">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Background Execution">
+<meta property="og:url" content="http://yoursite.com/2016/10/12/BackgroundTask/index.html">
+<meta property="og:site_name" content="Caio's Blog">
+<meta property="og:description" content="后台执行&amp;#8195;&amp;#8195;当用户不在前台使用你的应用的时候，系统就会将它挪到后台状态。对于很多App而言，后台状态就是app在转向暂停路上的一个简短的过渡。暂停App有利于提升电池的寿命，并且它还可以让系统提供出更多的资源给用户正在关注的前台应用。
+&amp;#8195;&amp;#8195;大多数应用都能够移至暂停状态，但是也有一些App可以有合法的原因而留在后台。比如说一个徒步旅行的应用，可能要一">
+<meta property="og:updated_time" content="2016-10-12T02:10:17.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Background Execution">
+<meta name="twitter:description" content="后台执行&amp;#8195;&amp;#8195;当用户不在前台使用你的应用的时候，系统就会将它挪到后台状态。对于很多App而言，后台状态就是app在转向暂停路上的一个简短的过渡。暂停App有利于提升电池的寿命，并且它还可以让系统提供出更多的资源给用户正在关注的前台应用。
+&amp;#8195;&amp;#8195;大多数应用都能够移至暂停状态，但是也有一些App可以有合法的原因而留在后台。比如说一个徒步旅行的应用，可能要一">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    }
+  };
+</script>
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2016/10/12/BackgroundTask/"/>
+
+
+  <title> Background Execution | Caio's Blog </title>
+</head>
+
+<body itemscope itemtype="//schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="//schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">Caio's Blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">生命不息，作死不止</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="/404.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />
+            
+            公益404
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="//schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Background Execution
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-10-12T09:41:38+08:00" content="2016-10-12">
+              2016-10-12
+            </time>
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="后台执行"><a href="#后台执行" class="headerlink" title=" 后台执行"></a><center> 后台执行</center></h2><p>&#8195;&#8195;当用户不在前台使用你的应用的时候，系统就会将它挪到后台状态。对于很多App而言，后台状态就是app在转向暂停路上的一个简短的过渡。暂停App有利于提升电池的寿命，并且它还可以让系统提供出更多的资源给用户正在关注的前台应用。</p>
+<p>&#8195;&#8195;大多数应用都能够移至暂停状态，但是也有一些App可以有合法的原因而留在后台。比如说一个徒步旅行的应用，可能要一直用到用户的位置信息，这样可以在一个地图上绘制出用户所走过的路线。而一个音频类的App可能需要在锁屏界面一直播放音乐。其他应用可能需要在后台下载内容，以尽快展示给用户。当你发现你必须要让你的应用跑在后台的时候，iOS可以有效的帮助你并且不会剥夺应用的资源和用户的电池。这个技术会分成以下三种情况：</p>
+<ul>
+<li>应用在前台开始执行了一个短暂的任务，可以在应用移至后台的时候请求一段完成这个任务的时间。</li>
+<li>在前台开始了下载任务应用，可以将这些下载任务托管给系统，因此，在应用下载的时候可以允许应用进入暂停或者终止。</li>
+<li>需要在后台执行特殊任务的应用，可以声明他们对一个或者多个后台执行模式的支持。<br>&#8195;&#8195;尽量去避免做一些后台的任务，除非这些任务可以提示所有的用户体验。一个应用可能是因为用户启动了另一个应用或者因为用户锁屏而暂时不使用它了而被移至后台。在这两种情况之下，用户都会都会发信号给应用，告诉应用不要再做任何有意义的工作了。继续运行只会耗尽用户的电量，并且可能会导致用户退出你的应用。所以多考虑一下你的后台工作，尽你所能避免后台工作。</li>
+</ul>
+<h3 id="执行有限长的任务"><a href="#执行有限长的任务" class="headerlink" title="执行有限长的任务"></a>执行有限长的任务</h3><p>&#8195;&#8195;当App被移至后台的时候，系统希望他们能够尽快的进入非活动状态，这样系统就能够停止这些应用。但是如果你的应用正在执行任务的过程中，并且还需要一些额外的时间去完成任务。那么应用可以调用UIApplication对象的 beginBackgroundTaskWithName:expirationHandler:或者 beginBackgroundTaskWithExpirationHandler:方法来请求一些额外的执行时间。调用这两个中任何一个方法都会系统推迟应用进入停止状态，并且给予应用一定的额外时间去完成任务。但是如果应用一旦完成任务，你必须要调用endBackgroundTask:方法来告诉系统应用已经完成了任务，可以进入停止状态了。</p>
+<p>&#8195;&#8195;每次调用beginBackgroundTaskWithName:expirationHandler:或者 beginBackgroundTaskWithExpirationHandler:方法的时候都会生成一个独一无二的token与相应的task相关联。当你的应用结束任务的时候，必须调用endBackgroundTask:方法。如果不调用，那么就会导致应用的终止。如果你在开始执行任务的时候就提供了一个结束的handler，那么系统就会回调这个handler并且给你最后一次机会来结束任务从而避免终止。</p>
+<p>&#8195;&#8195;你不必要等到应用已经被移至后台的时候再去指定后台任务。更好的设计是在开始任务之前就调用beginBackgroundTaskWithName:expirationHandler:或者beginBackgroundTaskWithExpirationHandler: 方法，在任务一结束的时候就调用endBackgroundTask：方法。你甚至可以在应用还在前台的时候就去采用这种模式。</p>
+<p>&#8195;&#8195;在以下代码实例中，展示了如何当应用切换至后台的时候，去启动一个长任务。在这个例子中，请求开始一个后台长任务包含了一个终止的handler，以防止任务超时。任务被提交到一个异步的调度队列，所以方法applicationDidEnterBackground: 可以正常返回。block区块的使用简化了需要保持指向一些重要指针引用的代码，例如这个task本身。这个bgTask值是这个类的一个成员变量，保存了指向当前后台任务的标识的指针，并且在这个方法里做了初始化。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">- (void)applicationDidEnterBackground:(UIApplication *)application</div><div class="line">&#123;</div><div class="line">    bgTask = [application beginBackgroundTaskWithName:@&quot;MyTask&quot; expirationHandler:^&#123;</div><div class="line">        // Clean up any unfinished task business by marking where you</div><div class="line">        // stopped or ending the task outright.</div><div class="line">        [application endBackgroundTask:bgTask];</div><div class="line">        bgTask = UIBackgroundTaskInvalid;</div><div class="line">    &#125;];</div><div class="line">    // Start the long-running task and return immediately.</div><div class="line">    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^&#123;</div><div class="line">        // Do the work associated with the task, preferably in chunks.</div><div class="line">        </div><div class="line">        </div><div class="line">        [application endBackgroundTask:bgTask];</div><div class="line">        bgTask = UIBackgroundTaskInvalid;</div><div class="line">    &#125;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>&#8195;&#8195;<code>最好习惯性的提供一个终止handler，如果你需要知道你的应用还剩余多少执行的时间，你可以调用UIApplication的backgroundTimeRemaining属性</code></p>
+<p>&#8195;&#8195;在处理终止的handler中，你可以添加一些额外的代码来结束你的任务。然而，你增加的任何的代码，一定不能执行太久，因为你的处理终止的handler被调用的时候，你的应用已经是接近于应用剩余时间的极限了。所以，只能执行尽量最少的状态信息保存并且结束任务。</p>
+<h3 id="在后台下载内容"><a href="#在后台下载内容" class="headerlink" title="在后台下载内容"></a>在后台下载内容</h3><p>&#8195;&#8195;当下载文件的时候，应用需要使用一个<code>NSURLSession</code>对象来启动下载任务。只有这样系统才能控制下载线程，以防止应用被暂停或者被终止。当你为后台传输配置一个<code>NSURLSession</code>对象的时候，系统会在一个独立的线程里面管理这些传输，并且用常规的方法将下载状态返回给应用。如果你的应用在传输过程中终止了，那么系统会在后台继续传输并且在某些情况下，当传输完成了或者当其中的一个或者多个任务需要告知你的时候就会启动App。</p>
+<p>&#8195;&#8195;为了支持后台传输，你必须要合适的配置你的<code>NSURLSession</code>。你需要创建一个<code>NSURLSessionConfiguration</code>并且设置几个合适的属性值。然后你就能在你创建session的时候就将配置对象传递给<code>NSURLSession</code>的合适的初始化方法了。</p>
+<p>&#8195;&#8195;创建一个支持后台下载的配置对象步骤如下：</p>
+<ol>
+<li>使用<code>NSURLSessionConfiguration</code>的<code>backgroundSessionConfigurationWithIdentifier:</code>方法创建一个配置对象。</li>
+<li>设置配置对象的<code>sessionSendsLaunchEvents</code>属性的值为YES。</li>
+<li>如果你的应用在前台就开始传输，那么建议你设置<code>discretionary</code>属性的值为YES。</li>
+<li>合适地配置其他的属性。</li>
+<li>使用配置对象创建你的<code>NSURLSession</code>对象</li>
+</ol>
+<p>&#8195;&#8195;一旦配置好了，你的NSURLSession就会在合适的时机将上传和下载任务递交给操作系统。如果当你的任务完成的时候，你的应用还在运行中（不论是前台还是后台），那么session就会以常用的方式通知到它的代理。如果任务还没有完成时候，系统终止了你的程序，那么系统就会自动管理后台的任务。如果用户终止了你的程序，那么系统就会取消所有等待的任务。<br>&#8195;&#8195;当所有的和后台session相关的任务都完成了，系统就会重新启动已经终止的应用（取决于 <code>sessionSendsLaunchEvents</code> 属性是不是被设置为YES，并且用户没有强制退出应用），并且会调用应用代理的 <code>application:handleEventsForBackgroundURLSession:completionHandler:</code>方法(系统可能也会重新启动应用来处理授权问题或者其他需要应用关注的与任务相关的事件)。在你实现的代理方法中，你可以使用之前提供的标识和相同的配置来创建一个新的NSURLSessionConfiguration和一个NSURLSession对象。系统会将你新创建的session对象和之前的任务与状态报告进行连接。</p>
+<h3 id="实现长运行任务"><a href="#实现长运行任务" class="headerlink" title="实现长运行任务"></a>实现长运行任务</h3><p>因为有些任务要求更多的只想时间，你必须请求特殊的权限来在后台运行而不被终止，在iOS中，只有特殊的App类型才被允许在后台运行。</p>
+<ul>
+<li>在后台播放音频类型文件的App，例如音乐播放App</li>
+<li>在后台录制音频类型文件的App</li>
+<li>在任何时刻都要让用户知道当前位置的应用，例如导航类App</li>
+<li>支持使用网络流的语音通话VoIP的App</li>
+<li>需要定期下载执行新的内容的App</li>
+<li>需要定期接收更新新内容的扩展附件的App</li>
+</ul>
+<p>&#8195;&#8195;实现那些服务的App必须在他们支持和使用系统框架的时候去声明这些服务。让系统知道，你的应用支持那些服务，但是在某些情况下，系统框架确实会让你的应用不被终止。</p>
+<p>##声明应用支持的后台任务<br>需要使用并且支持后台任务的应用必须提前声明这些服务。在Xcode5或者更高版本中，你可以在你的应用设置中的功能选项卡中声明你的应用支持的后台模式。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/iOS文档解读/" rel="tag">#iOS文档解读</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/10/12/UIViewController/" rel="prev" title="UIViewController 文档解读">
+                UIViewController 文档解读 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="//schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://7xqmjb.com1.z0.glb.clouddn.com/2016091443690u=1172000421,752760050&fm=116&gp=0.gif"
+               alt="Caio" />
+          <p class="site-author-name" itemprop="name">Caio</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">4</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#后台执行"><span class="nav-number">1.</span> <span class="nav-text"> 后台执行</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#执行有限长的任务"><span class="nav-number">1.1.</span> <span class="nav-text">执行有限长的任务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#在后台下载内容"><span class="nav-number">1.2.</span> <span class="nav-text">在后台下载内容</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实现长运行任务"><span class="nav-number">1.3.</span> <span class="nav-text">实现长运行任务</span></a></li></ol></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Caio</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.2"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

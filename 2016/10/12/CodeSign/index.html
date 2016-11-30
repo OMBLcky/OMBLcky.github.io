@@ -1,0 +1,691 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="iOS," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.2" />
+
+
+
+
+
+
+<meta name="description" content="在接触到iOS的第一天遇到的最蛋疼的事情就是证书与签名。莫名其妙安装了一个带密码的.p12文件，然后项目里面还不能运行，折腾了半天，换了个Bundle ID,选了个证书。所以我花了一天的时间，深入仔细地研究了一下这个证书和签名到底是什么玩意~
+
+算法在进入主题之前，需要知道、了解以下两类算法
+摘要算法摘要算法是iOS签名认证过程中不可或缺的一类算法。它可以将任意长度的文本或者字节数据转换成一个固">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS 证书与代码签名">
+<meta property="og:url" content="http://yoursite.com/2016/10/12/CodeSign/index.html">
+<meta property="og:site_name" content="Caio's Blog">
+<meta property="og:description" content="在接触到iOS的第一天遇到的最蛋疼的事情就是证书与签名。莫名其妙安装了一个带密码的.p12文件，然后项目里面还不能运行，折腾了半天，换了个Bundle ID,选了个证书。所以我花了一天的时间，深入仔细地研究了一下这个证书和签名到底是什么玩意~
+
+算法在进入主题之前，需要知道、了解以下两类算法
+摘要算法摘要算法是iOS签名认证过程中不可或缺的一类算法。它可以将任意长度的文本或者字节数据转换成一个固">
+<meta property="og:image" content="http://7xqmjb.com1.z0.glb.clouddn.com/20161012147627833364478.jpg?imageView2/0/format/jpg">
+<meta property="og:image" content="http://7xqmjb.com1.z0.glb.clouddn.com/20161012147627863014883.jpg?imageView2/0/format/jpg">
+<meta property="og:image" content="http://7xqmjb.com1.z0.glb.clouddn.com/201610135809059CB73A1-EE8A-41CB-88BE-A88C9F9D20E5.png">
+<meta property="og:image" content="http://7xqmjb.com1.z0.glb.clouddn.com/20161013727015856F31C-CF9B-4BA2-82EE-3D5DAFB31FE3.png">
+<meta property="og:image" content="http://7xqmjb.com1.z0.glb.clouddn.com/20161013147634122120744.jpg?imageView2/0/format/jpg">
+<meta property="og:image" content="http://7xqmjb.com1.z0.glb.clouddn.com/20161014306278C93E06F-F793-49A7-A108-5CA3E0479C07.png">
+<meta property="og:image" content="http://7xqmjb.com1.z0.glb.clouddn.com/20161014655927A179002-05AE-42D8-BC02-404AF25E76DE.png">
+<meta property="og:image" content="http://7xqmjb.com1.z0.glb.clouddn.com/201610142121740E4614A-6F90-49AF-8E06-A0E2E8C9C0F3.png">
+<meta property="og:image" content="http://7xqmjb.com1.z0.glb.clouddn.com/201610146617097DB8235-716B-42C9-8B90-90C26B2D6F8F.png">
+<meta property="og:image" content="http://7xqmjb.com1.z0.glb.clouddn.com/2016101434890F49F0D8C-13C8-4BDA-8CAC-FE53E51A85B0.png">
+<meta property="og:image" content="http://7xqmjb.com1.z0.glb.clouddn.com/201610141672309FEF5FD-6F35-4CA4-BFB3-018865E67F89.png">
+<meta property="og:updated_time" content="2016-10-14T03:45:37.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="iOS 证书与代码签名">
+<meta name="twitter:description" content="在接触到iOS的第一天遇到的最蛋疼的事情就是证书与签名。莫名其妙安装了一个带密码的.p12文件，然后项目里面还不能运行，折腾了半天，换了个Bundle ID,选了个证书。所以我花了一天的时间，深入仔细地研究了一下这个证书和签名到底是什么玩意~
+
+算法在进入主题之前，需要知道、了解以下两类算法
+摘要算法摘要算法是iOS签名认证过程中不可或缺的一类算法。它可以将任意长度的文本或者字节数据转换成一个固">
+<meta name="twitter:image" content="http://7xqmjb.com1.z0.glb.clouddn.com/20161012147627833364478.jpg?imageView2/0/format/jpg">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    }
+  };
+</script>
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2016/10/12/CodeSign/"/>
+
+
+  <title> iOS 证书与代码签名 | Caio's Blog </title>
+</head>
+
+<body itemscope itemtype="//schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="//schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">Caio's Blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">生命不息，作死不止</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="/404.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />
+            
+            公益404
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="//schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                iOS 证书与代码签名
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-10-12T21:39:43+08:00" content="2016-10-12">
+              2016-10-12
+            </time>
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>在接触到iOS的第一天遇到的最蛋疼的事情就是证书与签名。莫名其妙安装了一个带密码的.p12文件，然后项目里面还不能运行，折腾了半天，换了个Bundle ID,选了个证书。所以我花了一天的时间，深入仔细地研究了一下这个证书和签名到底是什么玩意~</p>
+</blockquote>
+<h3 id="算法"><a href="#算法" class="headerlink" title="算法"></a>算法</h3><p>在进入主题之前，需要知道、了解以下两类算法</p>
+<h4 id="摘要算法"><a href="#摘要算法" class="headerlink" title="摘要算法"></a>摘要算法</h4><p>摘要算法是iOS签名认证过程中不可或缺的一类算法。它可以将任意长度的文本或者字节数据转换成一个固定长度的文本。并且:</p>
+<ol>
+<li><p>只要源不一致，计算结果必然不同。</p>
+</li>
+<li><p>无法逆向。<br>典型算法：MD5,SHA等</p>
+</li>
+</ol>
+<h4 id="加密算法——非对称加密算法"><a href="#加密算法——非对称加密算法" class="headerlink" title="加密算法——非对称加密算法"></a>加密算法——非对称加密算法</h4><p>如果说摘要算法是不可或缺的，那么非对称加密算法作为世界上最重要的算法，已然是作为iOS签名认证的核心了。非对称加密算法有以下的特点：</p>
+<ul>
+<li><p>对于一个私钥，有且只有一个与之对应的公钥。生成者负责生成私钥和公钥，并保存私钥，公开公钥</p>
+</li>
+<li><p>公钥是公开的，但不可能通过公钥反推出私钥，或者说极难反推，只能穷举，所以只要密钥足够长度，要通过穷举而得到私钥，几乎是不可能的</p>
+</li>
+<li><p>通过私钥加密的密文只能通过公钥解密，公钥加密的密文只有通过私钥解密</p>
+</li>
+</ul>
+<p>典型算法：RSA</p>
+<p>以上简单介绍一下两个重要的算法，详细的算法说明见百度;接下来就需要看一下另一个重要的概念:</p>
+<h3 id="数字签名"><a href="#数字签名" class="headerlink" title="数字签名"></a>数字签名</h3><p>首先要明确的是数字签名是做什么的？数字签名是用来验证数据的完整性和可靠性的。何为完整性？就是保证数据不被三方所篡改。何为可靠性？就是保证数据是确定由对方发送的。</p>
+<p>数字签名就是以上两者实现的一个结合。例如:我们有一个大文本需要去发送给对方，首先我们会对文本进行摘要算法，得到摘要。然后，对这个摘要使用自己的私钥加密，最后再将文本，加密后的密文以及公钥一起发送给对方。<br>对方拿到数据之后，将密文用对方的公钥解密。然后将对方发来的数据再次使用摘要算法获取摘要。将解密之后的摘要和计算得到的摘要进行比对。前一个步骤是验证数据的可靠性也称为不可抵赖性（即数据由对方发送），后一步是验证数据的完整性。</p>
+<p>而这个获取摘要然后加密的过程就称之为“数字签名”。</p>
+<h3 id="数字证书"><a href="#数字证书" class="headerlink" title="数字证书"></a>数字证书</h3><p>有这么一个情况，如果数据在发送过程中，其中的公钥被人替换了，那么不就没有人能够验证数据了？始终认为数据是不可靠不完整的？</p>
+<p>这个时候就需要有一个方法去保证这个公钥的可靠性，那就是数字证书。</p>
+<p>数字证书就是由一些称之为认证机构的颁发给你的电子证书，这个证书里面包含你的公钥和一些信息。有人说，这有什么特别的。特别的就在于，这些认证机构会对这个证书使用机构的私钥签名。<br>在操作系统中会有几个默认的证书，被称之为根证书，这些机构被称为Root CA.你就可以用这些根证书中的公钥去获取证书中的对方的公钥，如果能解开，那说明这个是可信的。而我们的证书就是由苹果CA颁发的。使用苹果颁发给我们的证书，才会被Xcode所信任。</p>
+<p>所有的基本知识已经介绍完了，下面开始正题…</p>
+<hr>
+<h3 id="第一步-——数字证书"><a href="#第一步-——数字证书" class="headerlink" title="第一步   ——数字证书"></a>第一步   ——数字证书</h3><p>说了半天，最重要的就是要有证书咯？好了，我们通过网上一系列的操作，开始获取证书。</p>
+<p><img src="http://7xqmjb.com1.z0.glb.clouddn.com/20161012147627833364478.jpg?imageView2/0/format/jpg" alt="jpg"></p>
+<p>Mac OS在钥匙串访问中就可以请求证书,如上图。点击成功保存之后赫然写了：证书请求创建成功，这才发现这根本不是证书。这个时候本地多了一个名为CertificateSigningRequest.certSigningRequest 的文件。先用openssl看看这个里面到底是什么？</p>
+<p><img src="http://7xqmjb.com1.z0.glb.clouddn.com/20161012147627863014883.jpg?imageView2/0/format/jpg" alt="20161012147627863014883.jpg"></p>
+<p>细细地看一下，这里面包含了这几样东西</p>
+<ol>
+<li><p>申请者信息，用申请者的私钥加密</p>
+</li>
+<li><p>申请者公钥，申请者使用的私钥对应的公钥</p>
+</li>
+<li><p>摘要算法和公钥加密算法</p>
+</li>
+</ol>
+<p>然后在苹果MC中申请证书的时候苹果就会要求上传SCR，上传成功之后遍终于拿到了传说中的证书。</p>
+<p>我们使用openssl看一下证书中的内容:</p>
+<p><img src="http://7xqmjb.com1.z0.glb.clouddn.com/201610135809059CB73A1-EE8A-41CB-88BE-A88C9F9D20E5.png" alt="201610135809059CB73A1-EE8A-41CB-88BE-A88C9F9D20E5.png"></p>
+<p>这是一个遵守x.509编码规范的数字证书。和其他x.509结构一样，证书中主要包括了两个域：data和Signature Algorithm,其中data域是证书中的内容，Signature Algorithm是苹果的CA的公钥。</p>
+<p>data域中又主要包括：Signature Algorithm,Issuer,Validity,Subject,Subject Public Key Info和X.509的扩展字段。代表的意思分别是被颁发者的签名算法，颁发机构的信息，有效期，被颁发者的信息，被颁发者的公钥。（具体的内容可以去看x.509的规范）</p>
+<p>换句话简单的来说，苹果从上传的CSR文件中取出了公钥，并且加入了申请者的信息，然后在最后BEGIN CERTIFICATE后加上了Apple CA的签名之后的文本，就构成了这个数字证书。</p>
+<p>OK，这个时候我们已经拿到证书了，双击安装。注意这个时候安装的机子必须是和刚刚生成CSR文件的机子是同一台，因为在生成CSR的时候本地会保留生成公钥和所对应的私钥。而安装证书的时候，系统就会自动匹配，以把刚刚生成的私钥和证书中的公钥相对应。也就是说，此时此刻，只有这台机子上是有相对应的公私钥的，其他任何地方最多只有公钥。我们可以看到在钥匙串中是这样的，注意是有个小三角可以展开的：</p>
+<p><img src="http://7xqmjb.com1.z0.glb.clouddn.com/20161013727015856F31C-CF9B-4BA2-82EE-3D5DAFB31FE3.png" alt="20161013727015856F31C-CF9B-4BA2-82EE-3D5DAFB31FE3.png"></p>
+<p>如果需要团队开发怎么办？一般来说我们都会把这个证书和对应的私钥备份一下。在keychain中选中证书和三角展开中的私钥，右击保存到本地，这个就是我在本文摘要中提到的.p12了。在其他机子上安装之后会自动安装证书和相对应的私钥。（注意备份的时候不要漏了私钥）</p>
+<p>这样的话，我们在使用Xcode编译打包的时候就会根据我们选择的证书（这个有误之后解释）去使用证书对应的私钥进行签名。</p>
+<p>苹果的证书有很多种，但是由上面的理论可以得出，只要我们给出的CSR是同一个，也就是说公钥不变，那么苹果给我们的证书中的公钥也是不会变的。苹果之所以区分这么些个证书，只是为了让开发者在不同的环境，不同的阶段使用不同的证书。</p>
+<p>第一步完成了，但是这个还只是麻烦事儿的刚刚开始……</p>
+<h3 id="第二步-——描述文件-mobileprofile"><a href="#第二步-——描述文件-mobileprofile" class="headerlink" title="第二步   ——描述文件(.mobileprofile)"></a>第二步   ——描述文件(.mobileprofile)</h3><p>回过头来想一下，我们要证书是为了什么？1.保证这个App是完整的，没有被别人改过。2.保证这个App是安全的（具体的安全标准就要看怎么去定义了）。那么问题来了，苹果怎么去保证，这个APP是否有权限接入苹果的某些服务呢？于是，就有了.mobileprofile，但是这只是.mobileprofile 的一个功能。</p>
+<p>.mobileprofile也是从MC中申请的。事实上我们在Xcode中编译打包的时候不论是debug,release还是distrbution，首要选择的就是provision profile，然后再选择证书。</p>
+<p>说到这里可能有些明白了，我们先看一下这个文件里面有什么。使用苹果自带的security命令查看。</p>
+<p><img src="http://7xqmjb.com1.z0.glb.clouddn.com/20161013147634122120744.jpg?imageView2/0/format/jpg" alt="20161013147634122120744.jpg"></p>
+<p>内容很多，我们慢慢看：<br>可以看到，文件是xml形式的文档类文件。仔细看文件内容都是以键值对形式出现的。内容包括：AppIdName, ApplicationIdentifierPrefix, CreationDate,Platform, DeveloperCertificates, Entitlements, ExpirationDate, Name, ProvisionedDevices, LocalProvision, TeamIdentifier, TeamName, TimeToLive, UUID, Version. 内容看起来好像很多。有些很容易懂，这里具体说明几个比较重要的。</p>
+<ol>
+<li><p>app对应的ID，这个是在MC中创建应用的时候必须创建的。</p>
+</li>
+<li><p>app可以使用的证书。之前有说，一个应用可以有多个证书。而DeveloperCertificates下的array标签中就包含了这个app所有可以选择的证书。其中第二个就是我们之前的那个证书（因为证书是基于base64，符合pem编码格式）。</p>
+</li>
+<li><p>功能授权列表。Entitlements 下的标签就是当前App所授权的功能。上图中就包含：钥匙串，其中的array就是KeychainAccessGroups.plist文件下的array；get-task-allow：调试开关，如果打开，则允许Xcode连接到应用进行调试，如果是发布版的profile一般是关闭的。</p>
+</li>
+<li><p>允许调试的设备ID。ProvisionedDevices 下列出了所有允许安装的设备列表。</p>
+</li>
+<li><p>苹果的签名。这里的签名和数字签名不太一样，.mobileprovision文件是一个根据密码讯息语法 (Cryptographic Message Syntax) 加密的文件（下文中会简称 CMS）。如果你处理过 S/MIME 邮件或者证书你会对这种加密比较熟悉，详细信息可以查看互联网工程任务组 (IETF) 制定的 RFC3852。某些版本的openssl可以查看，但是mac自带的不行，这也就是为什么我们要用security而不是openssl。总之这个文件只有苹果能够生成，并且我们无法修改，也就是苹果控制了以上所有的参数。</p>
+</li>
+</ol>
+<p>如第5点所说，这个文件是由苹果签名的，一旦其中的任何一个参数需要做一些改动的时候我们就需要从MC中重新配置，并且重新替换掉原来的配置文件。</p>
+<h3 id="第三步-——Xcode7签名问题"><a href="#第三步-——Xcode7签名问题" class="headerlink" title="第三步   ——Xcode7签名问题"></a>第三步   ——Xcode7签名问题</h3><p>关于签名的介绍几本结束了，但是关于Xcode7版本的代码签名还是有几点疑问需要解释一下。</p>
+<ol>
+<li>Xcode7推出了无需证书即可在真机上调试，这个是怎么做到的，而且不需要申请证书？</li>
+</ol>
+<p><img src="http://7xqmjb.com1.z0.glb.clouddn.com/20161014306278C93E06F-F793-49A7-A108-5CA3E0479C07.png" alt="20161014306278C93E06F-F793-49A7-A108-5CA3E0479C07.png"><br>在Xcode7 的设置中添加自己的AppId账号之后，选择自己的team，点击fix issue，之后就可以编译签名了。</p>
+<p>Xcode具体是怎么做的？Xcode先检测本地有没有证书。如果没有，创建证书申请CSR,然后向MC申请证书，在本地创建安装证书，然后再向MC请求生成provision profile，请求的同时会把本地的证书上传。如果有证书了，那么还要验证一下当前的连接的调试设备是不是在描述文件中。如果不在，就需要再次请求替换新的描述文件。所以其实并不是无需证书，而是Xcode自动去创建管理了。</p>
+<p>Xcode下载后的文件由Xcode自己去管理的，如上图。右击之后我们可以在finder中显示，所有的文件都在/Users/用户名/Library/MobileDevice/Provisioning Profiles 目录下管理，可以看到所有的文件命名都是无规则的。并且这些描述文件的有效期都很短！</p>
+<ol>
+<li>那这个文件和我们在MC中手动上传和下载的描述文件是不是一致的呢？</li>
+</ol>
+<p>答案是否定的。我们在编译签名的地方手动选择Xcode管理的这些描述文件，Xcode报错。如下图，大致的意思就是这个文件是由Xcode管理的，签名需要一个手动管理的文件。这个手动管理的文件其实就是我们需要自己从MC中生成、下载。</p>
+<p><img src="http://7xqmjb.com1.z0.glb.clouddn.com/20161014655927A179002-05AE-42D8-BC02-404AF25E76DE.png" alt="20161014655927A179002-05AE-42D8-BC02-404AF25E76DE.png"></p>
+<p>回到第二步，我们在列出.mobileprofile中内容的时候，有一个字段为LocalProvision，值为true。看到这里就明白了，这个字段就是用来标记这个证书是不是由Xcode申请、下载、管理的。如果我们使用MC中手动下载的，那便没有这个字段。</p>
+<h3 id="第四步-——iOS的签名"><a href="#第四步-——iOS的签名" class="headerlink" title="第四步   ——iOS的签名"></a>第四步   ——iOS的签名</h3><p>关于签名和Xcode就是以上那么多了，现在我们看一下iOS到底是怎么去签名App的。</p>
+<p>打包好的App是一个.ipa文件，把文件后缀改为zip便可以解压了。解压完成后，就是一个.app文件。先看一下这个应用的签名情况，签名是OK的。<br><img src="http://7xqmjb.com1.z0.glb.clouddn.com/201610142121740E4614A-6F90-49AF-8E06-A0E2E8C9C0F3.png" alt="201610142121740E4614A-6F90-49AF-8E06-A0E2E8C9C0F3.png"></p>
+<p>然后右击显示包内容。<br><img src="http://7xqmjb.com1.z0.glb.clouddn.com/201610146617097DB8235-716B-42C9-8B90-90C26B2D6F8F.png" alt="201610146617097DB8235-716B-42C9-8B90-90C26B2D6F8F.png"></p>
+<p>包中包含了：</p>
+<ol>
+<li>资源文件</li>
+<li>文件_CodeSignature/CodeResources</li>
+<li>可执行文件</li>
+<li>mobileprovision文件，打包的时候加入。</li>
+<li>Frameworks。程序引用的非系统自带的Frameworks，每个Frameworks其实就是一个app，其中的结构应该和app差不多，也包含签名信息CodeResources文件。（示例中没有）</li>
+</ol>
+<p>在_CodeSignature中含有一个CodeResources文件，打开文件：<br><img src="http://7xqmjb.com1.z0.glb.clouddn.com/2016101434890F49F0D8C-13C8-4BDA-8CAC-FE53E51A85B0.png" alt="2016101434890F49F0D8C-13C8-4BDA-8CAC-FE53E51A85B0.png"><br>这是一个plist文件。一共有四个大节点，rules，files,rules2,files2.前两者是兼容老版本，后两者是新版本。新版本无法排除不签名文件。files中包含了包中除了Frameworks和可执行文件在外的所有文件的签名，但是苹果似乎对此还做了一个类似base64的转码。rules是一些签名规则。</p>
+<p>可执行文件和扩展是需要被单独签名的，并且他们的签名会被写入二进制文件。在验证签名的时候这两者和资源文件就要区分对待了。如下图，分别对包内的资源文件和可执行文件查看签名情况(资源文件显示未签名，可执行文件显示已签名)：<br><img src="http://7xqmjb.com1.z0.glb.clouddn.com/201610141672309FEF5FD-6F35-4CA4-BFB3-018865E67F89.png" alt="201610141672309FEF5FD-6F35-4CA4-BFB3-018865E67F89.png"></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>在iOS中，代码签名是必要的。这也是苹果能保证应用生态圈的一个重要环节。</p>
+<p>接下来需要学习的应该是研究一下具体签名规则。包括本文中还有一些地方我并没有弄得很懂，例如不同文件的签名写入，写入签名对文件的影响，CodeResources中rules标签下的内容。这些可能需要去阅读一下<a href="https://github.com/maciekish/iReSign" target="_blank" rel="external">iReSign</a>源码了，这些可能会对设计自动打包有帮助</p>
+<p>参考内容：</p>
+<p><a href="http://www.cnblogs.com/ioriwellings/p/5066652.html" target="_blank" rel="external">漫谈iOS程序的证书和签名机制</a></p>
+<p><a href="https://objccn.io/issue-17-2/" target="_blank" rel="external">代码签名探析</a></p>
+<p><a href="http://blog.csdn.net/phunxm/article/details/42685597" target="_blank" rel="external">iOS Provisioning Profile(Certificate)与Code Signing详解</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/iOS/" rel="tag">#iOS</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/10/12/OC-Code/" rel="next" title="OC代码规范">
+                <i class="fa fa-chevron-left"></i> OC代码规范
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="//schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://7xqmjb.com1.z0.glb.clouddn.com/2016091443690u=1172000421,752760050&fm=116&gp=0.gif"
+               alt="Caio" />
+          <p class="site-author-name" itemprop="name">Caio</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">4</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#算法"><span class="nav-number">1.</span> <span class="nav-text">算法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#摘要算法"><span class="nav-number">1.1.</span> <span class="nav-text">摘要算法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#加密算法——非对称加密算法"><span class="nav-number">1.2.</span> <span class="nav-text">加密算法——非对称加密算法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数字签名"><span class="nav-number">2.</span> <span class="nav-text">数字签名</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数字证书"><span class="nav-number">3.</span> <span class="nav-text">数字证书</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第一步-——数字证书"><span class="nav-number">4.</span> <span class="nav-text">第一步   ——数字证书</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第二步-——描述文件-mobileprofile"><span class="nav-number">5.</span> <span class="nav-text">第二步   ——描述文件(.mobileprofile)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第三步-——Xcode7签名问题"><span class="nav-number">6.</span> <span class="nav-text">第三步   ——Xcode7签名问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第四步-——iOS的签名"><span class="nav-number">7.</span> <span class="nav-text">第四步   ——iOS的签名</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number"></span> <span class="nav-text">总结</span></a></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Caio</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.2"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
