@@ -68,7 +68,7 @@
 <link href="/css/main.css?v=5.0.2" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="OC," />
+  <meta name="keywords" content="iOS 10," />
 
 
 
@@ -84,16 +84,28 @@
 
 
 
-<meta name="description" content="iOS高质量代码OC语言多用类型常量，少用#define预处理指令&amp;#8195;&amp;#8195;理由：很多人都喜欢使用预定义指令去定义一些常量值，例如：#define ANIMATION_DURATION 0.3。预处理指令在编译期间就会把所有的字符串 ANIMATION_DURATION 都会替换成0.3。但是这样做的问题在于：1. 阅读代码的时候，或者调试的时候根本不知道这个值得类型是什么。2">
+<meta name="description" content="iOS 中在聊天输入框中输入@符号弹出选择@的联系人列表。
+
+问题简述一般来说，我们对此的做法是，实现UITextViewDelegate协议，在shouldChange里面决定对用户本次输入的内容的监听。在检测到输入@的时候弹出选择界面。
+问题触发在 iOS10 上使用自带的九宫格输入法，选择符号按钮，输入英文的@。
+问题原因使用九宫格输入法的时候，点击符号按钮，会自动输入一个“，”，随后选择">
 <meta property="og:type" content="article">
-<meta property="og:title" content="OC代码规范">
-<meta property="og:url" content="http://yoursite.com/2016/10/12/OC-Code/index.html">
+<meta property="og:title" content="iOS 10九宫格输入法问题">
+<meta property="og:url" content="http://yoursite.com/2016/10/31/ios-10九宫格输入法问题/index.html">
 <meta property="og:site_name" content="Caio's Blog">
-<meta property="og:description" content="iOS高质量代码OC语言多用类型常量，少用#define预处理指令&amp;#8195;&amp;#8195;理由：很多人都喜欢使用预定义指令去定义一些常量值，例如：#define ANIMATION_DURATION 0.3。预处理指令在编译期间就会把所有的字符串 ANIMATION_DURATION 都会替换成0.3。但是这样做的问题在于：1. 阅读代码的时候，或者调试的时候根本不知道这个值得类型是什么。2">
-<meta property="og:updated_time" content="2016-10-12T02:08:50.000Z">
+<meta property="og:description" content="iOS 中在聊天输入框中输入@符号弹出选择@的联系人列表。
+
+问题简述一般来说，我们对此的做法是，实现UITextViewDelegate协议，在shouldChange里面决定对用户本次输入的内容的监听。在检测到输入@的时候弹出选择界面。
+问题触发在 iOS10 上使用自带的九宫格输入法，选择符号按钮，输入英文的@。
+问题原因使用九宫格输入法的时候，点击符号按钮，会自动输入一个“，”，随后选择">
+<meta property="og:updated_time" content="2017-01-17T02:29:47.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="OC代码规范">
-<meta name="twitter:description" content="iOS高质量代码OC语言多用类型常量，少用#define预处理指令&amp;#8195;&amp;#8195;理由：很多人都喜欢使用预定义指令去定义一些常量值，例如：#define ANIMATION_DURATION 0.3。预处理指令在编译期间就会把所有的字符串 ANIMATION_DURATION 都会替换成0.3。但是这样做的问题在于：1. 阅读代码的时候，或者调试的时候根本不知道这个值得类型是什么。2">
+<meta name="twitter:title" content="iOS 10九宫格输入法问题">
+<meta name="twitter:description" content="iOS 中在聊天输入框中输入@符号弹出选择@的联系人列表。
+
+问题简述一般来说，我们对此的做法是，实现UITextViewDelegate协议，在shouldChange里面决定对用户本次输入的内容的监听。在检测到输入@的时候弹出选择界面。
+问题触发在 iOS10 上使用自带的九宫格输入法，选择符号按钮，输入英文的@。
+问题原因使用九宫格输入法的时候，点击符号按钮，会自动输入一个“，”，随后选择">
 
 
 
@@ -114,10 +126,10 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2016/10/12/OC-Code/"/>
+  <link rel="canonical" href="http://yoursite.com/2016/10/31/ios-10九宫格输入法问题/"/>
 
 
-  <title> OC代码规范 | Caio's Blog </title>
+  <title> iOS 10九宫格输入法问题 | Caio's Blog </title>
 </head>
 
 <body itemscope itemtype="//schema.org/WebPage" lang="zh-Hans">
@@ -247,7 +259,7 @@
             
             
               
-                OC代码规范
+                iOS 10九宫格输入法问题
               
             
           </h1>
@@ -259,8 +271,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-10-12T10:08:20+08:00" content="2016-10-12">
-              2016-10-12
+            <time itemprop="dateCreated" datetime="2016-10-31T12:47:49+08:00" content="2016-10-31">
+              2016-10-31
             </time>
           </span>
 
@@ -287,13 +299,17 @@
       
 
       
-        <h1 id="iOS高质量代码"><a href="#iOS高质量代码" class="headerlink" title=" iOS高质量代码"></a><center> iOS高质量代码</center></h1><h2 id="OC语言"><a href="#OC语言" class="headerlink" title="OC语言"></a>OC语言</h2><h4 id="多用类型常量，少用-define预处理指令"><a href="#多用类型常量，少用-define预处理指令" class="headerlink" title="多用类型常量，少用#define预处理指令"></a>多用类型常量，少用#define预处理指令</h4><p>&#8195;&#8195;<strong>理由：</strong>很多人都喜欢使用预定义指令去定义一些常量值，例如：<code>#define ANIMATION_DURATION 0.3</code>。预处理指令在编译期间就会把所有的字符串 ANIMATION_DURATION 都会替换成0.3。但是这样做的问题在于：1. 阅读代码的时候，或者调试的时候根本不知道这个值得类型是什么。2.值很容易出现在不该出现的地方（只要包含了头文件）。3.容易遭人修改。4.不易编写开发文档。</p>
-<p>&#8195;&#8195;<strong>解决方案：</strong></p>
-<ol>
-<li>对内变量：使用定义静态常量变量。例如：<code>static const int key = 3;</code>如果不添加这个<code>static</code>那么编译器就会再创建一个<code>外部符号（external symbol）</code>。相反如果一个变量既声明为<code>static</code>又声明为<code>const</code>那么编译器就会像预定义处理一样替换值，但是这种方式是带有类型信息的。</li>
-<li>对外变量：使用定义静态不可变扩展常量变量。例如：<code>entern NSString *const ECOLoginManagerDidLoginNotification</code> <code>NSString *const ECOLoginManagerDidLoginNotification = @&quot;ECOLoginManagerDidLoginNotification&quot;</code>前者在头文件中声明，后者在声明改变量的头文件相对应的实现文件中定义比去年一起会在生成目标文件时在<code>数据段</code>为字符串分配空间。此类常量将会放在一个<code>全局变量表</code>中，以便于在定义的编译单元之外的地方使用。</li>
-</ol>
-<p>&#8195;&#8195;<strong>命名规则：</strong>如果是在编译单元内有效，那么就以<code>k</code>开头。如果常量在类之外也是可见的，那么就以<code>类名</code>为前缀。</p>
+        <blockquote>
+<p>iOS 中在聊天输入框中输入@符号弹出选择@的联系人列表。</p>
+</blockquote>
+<h6 id="问题简述"><a href="#问题简述" class="headerlink" title="问题简述"></a>问题简述</h6><p>一般来说，我们对此的做法是，实现UITextViewDelegate协议，在shouldChange里面决定对用户本次输入的内容的监听。在检测到输入@的时候弹出选择界面。</p>
+<h6 id="问题触发"><a href="#问题触发" class="headerlink" title="问题触发"></a>问题触发</h6><p>在 iOS10 上使用自带的九宫格输入法，选择符号按钮，输入英文的@。</p>
+<h6 id="问题原因"><a href="#问题原因" class="headerlink" title="问题原因"></a>问题原因</h6><p>使用九宫格输入法的时候，点击符号按钮，会自动输入一个“，”，随后选择其他符号的时候就会覆盖这个“，”。</p>
+<p>在iOS 9以及之前，在shouldChange的时候就会携带三个参数，一个是当前输入内容变化的textView,一个是内容变化的range，还有一个是变化的内容NSString。range中position为当前内容变化的位置，length为变化的长度。在上述情况下，iOS 9会有两次回调，第二次输入@的回调中range中的length为1，NSString 为“@”。</p>
+<p>在iOS10 ，一共收到3次回调，第一次是输入“，”，输入@的时候会连续回调两次。第一次 length为1，NSString为“@”，但是实现结果不是替换了“，”，而是删除了“@”。第二次length为 0 ，NSString 为“@”，实现结果是增加一个@符。</p>
+<h6 id="问题解决"><a href="#问题解决" class="headerlink" title="问题解决"></a>问题解决</h6><p>我不理解为什么iOS10 要这么做，有可能是iOS10 的一个bug吧。想要绕过这个问题，不能简单的由range中的length和@来区分iOS 10 中的问题。因为我们还要兼容到iOS9。</p>
+<p>在最终的解决方案中，我们首先在shouldChange中判断NSString 是不是@符，如果是那么再看length是不是1，如果是就记录本次替换之后的，即把“，”替换为“@”之后的字符串。如果是iOS10的话就会有第二次回调，回调的时候比较当前textview中的字符串和上次记录的。如果不一致，那就说明上次替换是失败的。这样就可以识别出两次回调的中的第二次了。</p>
+<p>注：在回调中必须都是返回YES，不控制是否更改。由它自己去改变。</p>
 
       
     </div>
@@ -316,7 +332,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/OC/" rel="tag">#OC</a>
+            <a href="/tags/iOS-10/" rel="tag">#iOS 10</a>
           
         </div>
       
@@ -325,17 +341,13 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2016/10/12/UIViewController/" rel="next" title="UIViewController 文档解读">
-                <i class="fa fa-chevron-left"></i> UIViewController 文档解读
+              <a href="/2016/10/12/CodeSign/" rel="next" title="iOS 证书与代码签名">
+                <i class="fa fa-chevron-left"></i> iOS 证书与代码签名
               </a>
             
           </div>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2016/10/12/CodeSign/" rel="prev" title="iOS 证书与代码签名">
-                iOS 证书与代码签名 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -442,7 +454,7 @@
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#iOS高质量代码"><span class="nav-number">1.</span> <span class="nav-text"> iOS高质量代码</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#OC语言"><span class="nav-number">1.1.</span> <span class="nav-text">OC语言</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#多用类型常量，少用-define预处理指令"><span class="nav-number">1.1.0.1.</span> <span class="nav-text">多用类型常量，少用#define预处理指令</span></a></li></ol></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-6"><a class="nav-link" href="#问题简述"><span class="nav-number">1.</span> <span class="nav-text">问题简述</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#问题触发"><span class="nav-number">2.</span> <span class="nav-text">问题触发</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#问题原因"><span class="nav-number">3.</span> <span class="nav-text">问题原因</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#问题解决"><span class="nav-number">4.</span> <span class="nav-text">问题解决</span></a></li></ol></div>
             
           </div>
         </section>

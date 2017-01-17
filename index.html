@@ -246,6 +246,110 @@
             
               
                 
+                <a class="post-title-link" href="/2016/10/31/ios-10九宫格输入法问题/" itemprop="url">
+                  iOS 10九宫格输入法问题
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-10-31T12:47:49+08:00" content="2016-10-31">
+              2016-10-31
+            </time>
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <blockquote>
+<p>iOS 中在聊天输入框中输入@符号弹出选择@的联系人列表。</p>
+</blockquote>
+<h6 id="问题简述"><a href="#问题简述" class="headerlink" title="问题简述"></a>问题简述</h6><p>一般来说，我们对此的做法是，实现UITextViewDelegate协议，在shouldChange里面决定对用户本次输入的内容的监听。在检测到输入@的时候弹出选择界面。</p>
+<h6 id="问题触发"><a href="#问题触发" class="headerlink" title="问题触发"></a>问题触发</h6><p>在 iOS10 上使用自带的九宫格输入法，选择符号按钮，输入英文的@。</p>
+<h6 id="问题原因"><a href="#问题原因" class="headerlink" title="问题原因"></a>问题原因</h6><p>使用九宫格输入法的时候，点击符号按钮，会自动输入一个“，”，随后选择其他符号的时候就会覆盖这个“，”。</p>
+<p>在iOS 9以及之前，在shouldChange的时候就会携带三个参数，一个是当前输入内容变化的textView,一个是内容变化的range，还有一个是变化的内容NSString。range中position为当前内容变化的位置，length为变化的长度。在上述情况下，iOS 9会有两次回调，第二次输入@的回调中range中的length为1，NSString 为“@”。</p>
+<p>在iOS10 ，一共收到3次回调，第一次是输入“，”，输入@的时候会连续回调两次。第一次 length为1，NSString为“@”，但是实现结果不是替换了“，”，而是删除了“@”。第二次length为 0 ，NSString 为“@”，实现结果是增加一个@符。</p>
+<h6 id="问题解决"><a href="#问题解决" class="headerlink" title="问题解决"></a>问题解决</h6><p>我不理解为什么iOS10 要这么做，有可能是iOS10 的一个bug吧。想要绕过这个问题，不能简单的由range中的length和@来区分iOS 10 中的问题。因为我们还要兼容到iOS9。</p>
+<p>在最终的解决方案中，我们首先在shouldChange中判断NSString 是不是@符，如果是那么再看length是不是1，如果是就记录本次替换之后的，即把“，”替换为“@”之后的字符串。如果是iOS10的话就会有第二次回调，回调的时候比较当前textview中的字符串和上次记录的。如果不一致，那就说明上次替换是失败的。这样就可以识别出两次回调的中的第二次了。</p>
+<p>注：在回调中必须都是返回YES，不控制是否更改。由它自己去改变。</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="//schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/2016/10/12/CodeSign/" itemprop="url">
                   iOS 证书与代码签名
                 </a>
@@ -805,7 +909,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">4</span>
+              <span class="site-state-item-count">5</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -815,7 +919,7 @@
           
             <div class="site-state-item site-state-tags">
               
-                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-count">4</span>
                 <span class="site-state-item-name">标签</span>
               
             </div>
@@ -852,7 +956,7 @@
         <div class="copyright" >
   
   &copy; 
-  <span itemprop="copyrightYear">2016</span>
+  <span itemprop="copyrightYear">2017</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
