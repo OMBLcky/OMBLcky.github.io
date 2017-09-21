@@ -1,0 +1,581 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.2" />
+
+
+
+
+
+
+<meta name="description" content="dispatch_oncedispatch_once是GCD中常用来在iOS中构建单例。一般的构建方式是：1234static dispatch_once_t oncetoken;dispatch_once(&amp;amp;oncetoken, ^&amp;#123;    // some one-time task&amp;#125;);
+今天正好看到一篇文章GCD外传：dispatch_once(上)这篇文章主要探">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GCD-dispatch_once性能探究">
+<meta property="og:url" content="http://yoursite.com/2017/09/21/GCD-dispatch-once性能探究/index.html">
+<meta property="og:site_name" content="Caio's Blog">
+<meta property="og:description" content="dispatch_oncedispatch_once是GCD中常用来在iOS中构建单例。一般的构建方式是：1234static dispatch_once_t oncetoken;dispatch_once(&amp;amp;oncetoken, ^&amp;#123;    // some one-time task&amp;#125;);
+今天正好看到一篇文章GCD外传：dispatch_once(上)这篇文章主要探">
+<meta property="og:updated_time" content="2017-09-21T13:38:43.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="GCD-dispatch_once性能探究">
+<meta name="twitter:description" content="dispatch_oncedispatch_once是GCD中常用来在iOS中构建单例。一般的构建方式是：1234static dispatch_once_t oncetoken;dispatch_once(&amp;amp;oncetoken, ^&amp;#123;    // some one-time task&amp;#125;);
+今天正好看到一篇文章GCD外传：dispatch_once(上)这篇文章主要探">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    }
+  };
+</script>
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/09/21/GCD-dispatch-once性能探究/"/>
+
+
+  <title> GCD-dispatch_once性能探究 | Caio's Blog </title>
+</head>
+
+<body itemscope itemtype="//schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="//schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">Caio's Blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">生命不息，作死不止</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="/404.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />
+            
+            公益404
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="//schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                GCD-dispatch_once性能探究
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2017-09-21T13:36:13+08:00" content="2017-09-21">
+              2017-09-21
+            </time>
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="dispatch-once"><a href="#dispatch-once" class="headerlink" title="dispatch_once"></a>dispatch_once</h3><p>dispatch_once是GCD中常用来在iOS中构建单例。一般的构建方式是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">static dispatch_once_t oncetoken;</div><div class="line">dispatch_once(&amp;oncetoken, ^&#123;</div><div class="line">    // some one-time task</div><div class="line">&#125;);</div></pre></td></tr></table></figure></p>
+<p>今天正好看到一篇文章<br><a href="http://www.dreamingwish.com/article/gcd-guide-dispatch-once-1.html" target="_blank" rel="external">GCD外传：dispatch_once(上)</a><br>这篇文章主要探究了dispatch_once的性能上的实现，以及通过几种方法模拟了dispatch_once的实现。</p>
+<p>在看文章的过程中，我突然想起了java中的单例的写法<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">private volatile static Singleton _instance;</div><div class="line">   public static Singleton getInstanceDC() &#123;</div><div class="line">        if (_instance == null) &#123;</div><div class="line">            synchronized (Singleton.class) &#123;</div><div class="line">                if (_instance == null) &#123;</div><div class="line">                    _instance = new Singleton();</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        return _instance;</div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
+<p>其中_instance是需要新建的对象。标准的双判写法，同步锁和锁内的判断保证了单例只会生成一个对象。锁外的判断保证了在对象生成之后不必要再次的加锁解锁消耗。变量前的volatile保证了对该对象的写操作永远在读操作之前。</p>
+<p>如上面的文章中所提到的，在使用单例的时候，99%的场景是使用已经生成的单例。为了提高性能，OC是不是也可以这么做？如果不这么做，就使用GCD常规的写法，有什么影响呢？</p>
+<p>######于是我做了以下的实验…</p>
+<p>#####第一个实验<br>计算dispatch_once的耗时。由于单次耗时具有很大的不确定性。这里我对dispatch_once操作进行了五十万次，并且计算了平均值。</p>
+<p>时间计算方法:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">CGFloat BNRTimeBlock (void (^block)(void)) &#123;</div><div class="line">    mach_timebase_info_data_t info;</div><div class="line">    if (mach_timebase_info(&amp;info) != KERN_SUCCESS) return -1.0;</div><div class="line">    </div><div class="line">    uint64_t start = mach_absolute_time ();</div><div class="line">    block ();</div><div class="line">    uint64_t end = mach_absolute_time ();</div><div class="line">    uint64_t elapsed = end - start;</div><div class="line">    </div><div class="line">    uint64_t nanos = elapsed * info.numer / info.denom;</div><div class="line">    return (CGFloat)nanos;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">static dispatch_once_t onceToken;</div><div class="line">    dispatch_once(&amp;onceToken, ^&#123;&#125;);</div><div class="line">    dispatch_async(dispatch_get_global_queue(0, 0), ^&#123;</div><div class="line">        int i = 1000000;</div><div class="line">        int j = i;</div><div class="line">        double total = 0;</div><div class="line">        while (j) &#123;</div><div class="line">            double mm = BNRTimeBlock(^&#123;</div><div class="line">                dispatch_once(&amp;onceToken, ^&#123;</div><div class="line">                &#125;);</div><div class="line">            &#125;);</div><div class="line">            if (i != j) &#123;</div><div class="line">                total = total + mm;</div><div class="line">            &#125;</div><div class="line">            j--;</div><div class="line">        &#125;</div><div class="line">        NSLog(@&quot;total%f&quot;,total / i);</div><div class="line">    &#125;);</div></pre></td></tr></table></figure>
+<p>平均时间：40 ns</p>
+<p>#####第二个实验<br>改变条件，增加线程数量，每个线程并发执行。每次执行完成增加一个睡眠时间，加大冲突的概率。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">static dispatch_once_t onceToken;</div><div class="line">    dispatch_once(&amp;onceToken, ^&#123;&#125;);</div><div class="line">    for (int o = 0; o &lt; 4; o ++) &#123;</div><div class="line">        dispatch_async(dispatch_get_global_queue(0, 0), ^&#123;</div><div class="line">            </div><div class="line">            int i = 5000000;</div><div class="line">            int j = i;</div><div class="line">            double total = 0;</div><div class="line">            while (j) &#123;</div><div class="line">                double mm = BNRTimeBlock(^&#123;</div><div class="line">                    dispatch_once(&amp;onceToken, ^&#123;</div><div class="line">                        BOOL i = 0;</div><div class="line">                    &#125;);</div><div class="line">                &#125;);</div><div class="line">                if (i != j) &#123;</div><div class="line">                    total = total + mm;</div><div class="line">                &#125;</div><div class="line">                j--;</div><div class="line">                sleep(0.5);</div><div class="line">            &#125;</div><div class="line">            NSLog(@&quot;total%f&quot;,total / i);</div><div class="line">        &#125;);</div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
+<p>4个线程执行的平均耗时分别是：40.28ns、41.70ns、40.36ns、41.18ns</p>
+<p>可见dispatch_once在多线程高冲突的环境下依旧可以保持良好的性能。</p>
+<p>#####第三个实验<br>dispatch_once在执行完成之后会将onceToken置为-1，表示已经执行过。那么类似java的双判写法，也在dispatch_once外面加一个判断。测试单线程五十万次的时间:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">double mm = BNRTimeBlock(^&#123;</div><div class="line">                    if (onceToken != -1) &#123;</div><div class="line">                        dispatch_once(&amp;onceToken, ^&#123;</div><div class="line">                            BOOL i = 0;</div><div class="line">                        &#125;);</div><div class="line">                    &#125;</div><div class="line">                &#125;);</div></pre></td></tr></table></figure>
+<p>执行的平均时间是：23.42 ns</p>
+<p>#####第四个实验<br>同样的，对第三个实验进行多线程的测试：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">static dispatch_once_t onceToken;</div><div class="line">    dispatch_once(&amp;onceToken, ^&#123;&#125;);</div><div class="line">    </div><div class="line">    for (int o = 0; o &lt; 4; o ++) &#123;</div><div class="line">        dispatch_async(dispatch_get_global_queue(0, 0), ^&#123;</div><div class="line">            int i = 5000000;</div><div class="line">            int j = i;</div><div class="line">            double total = 0;</div><div class="line">            while (j) &#123;</div><div class="line">                double mm = BNRTimeBlock(^&#123;</div><div class="line">                    if (onceToken != -1) &#123;</div><div class="line">                        dispatch_once(&amp;onceToken, ^&#123;</div><div class="line">                            BOOL i = 0;</div><div class="line">                        &#125;);</div><div class="line">                    &#125;</div><div class="line">                &#125;);</div><div class="line">                if (i != j) &#123;</div><div class="line">                    total = total + mm;</div><div class="line">                &#125;</div><div class="line">                j--;</div><div class="line">                sleep(0.5);</div><div class="line">            &#125;</div><div class="line">            NSLog(@&quot;total%f&quot;,total / i);</div><div class="line">        &#125;);</div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
+<p>4个线程执行的平均耗时分别是：22.37ns、22.68ns、22.17ns、21.73ns</p>
+<p>实验中可以看到如果不增加判断的话，耗时基本上是增加判断的两倍左右。由于苹果GCD优化的非常好，这一点小改动的优化级别是在纳秒。但是在大型应用，尤其是单例管理类众多的应用中，优化效果还是很可观的。毕竟积少成多，没有最快，只有更快。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/10/31/ios-10九宫格输入法问题/" rel="next" title="iOS 10九宫格输入法问题">
+                <i class="fa fa-chevron-left"></i> iOS 10九宫格输入法问题
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="//schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://7xqmjb.com1.z0.glb.clouddn.com/2016091443690u=1172000421,752760050&fm=116&gp=0.gif"
+               alt="Caio" />
+          <p class="site-author-name" itemprop="name">Caio</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">6</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#dispatch-once"><span class="nav-number">1.</span> <span class="nav-text">dispatch_once</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Caio</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.2"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
